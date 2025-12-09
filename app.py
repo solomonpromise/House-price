@@ -2,7 +2,16 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
+import logging
 from sklearn.base import BaseEstimator, TransformerMixin
+
+# ==========================================
+# SETUP LOGGING
+# ==========================================
+# This tells Python: "Print any message that is INFO level or higher"
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 # ==========================================
 # 1. DEFINE CUSTOM CLASSES
@@ -142,7 +151,13 @@ if submit_btn:
     
     input_df = pd.DataFrame(input_data)
     
+    # 2. Predict
     prediction_log = model.predict(input_df)
     prediction = np.exp(prediction_log[0])
     
+    # 3. LOG THE EVENT (This is the Monitoring part)
+    # We record the inputs and the output.
+    logger.info(f"PREDICTION EVENT: Inputs=[Area:{lot_area}, Qual:{overall_qual}, Yr:{year_built}], Output=${prediction:,.2f}")
+    
+    # 4. Display the result
     st.success(f"Estimated Price: ${prediction:,.2f}")
